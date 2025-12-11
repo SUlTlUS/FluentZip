@@ -1,0 +1,34 @@
+<Window
+    x:Class="FluentZip.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FluentZip"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <!-- ★★★ 关键点：这里不要设置 Background，或者设为 Transparent ★★★ -->
+    <!-- 只有让 Grid 透明，底部的 Mica 材质才能透到标题栏区域 -->
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32"/>
+            <!-- 标题栏高度 -->
+            <RowDefinition Height="*"/>
+            <!-- 内容区域 -->
+        </Grid.RowDefinitions>
+
+        <!-- 自定义标题栏 -->
+        <!-- Background 必须是 Transparent，且要在 MainWindow.xaml.cs 里调用 SetTitleBar -->
+        <Grid x:Name="AppTitleBar" Background="Transparent" Grid.Row="0" Canvas.ZIndex="1">
+            <TextBlock Text="FluentZip" 
+                       VerticalAlignment="Center" 
+                       Margin="48,0,0,0" 
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       IsHitTestVisible="False"/>
+            <!-- 穿透点击，方便拖拽窗口 -->
+        </Grid>
+
+        <!-- 导航框架 -->
+        <Frame x:Name="ContentFrame" Grid.Row="1"/>
+    </Grid>
+</Window>

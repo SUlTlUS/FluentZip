@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "FluentZip (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "FluentZip (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
