@@ -596,7 +596,8 @@ namespace FluentZip
         {
             string extension = IOPath.GetExtension(path ?? string.Empty);
             bool hasArchive = !string.IsNullOrEmpty(path);
-            bool canAdd = hasArchive && string.Equals(extension, ".zip", StringComparison.OrdinalIgnoreCase);
+            bool canAdd = hasArchive && (string.Equals(extension, ".zip", StringComparison.OrdinalIgnoreCase) || 
+                                         string.Equals(extension, ".7z", StringComparison.OrdinalIgnoreCase));
 
             if (AddButton != null)
             {
@@ -1147,7 +1148,7 @@ namespace FluentZip
             };
         }
 
-        private bool EnsureWritableZip()
+        private bool EnsureWritableArchive()
         {
             if (string.IsNullOrEmpty(_currentArchivePath) || !File.Exists(_currentArchivePath))
             {
@@ -1155,9 +1156,9 @@ namespace FluentZip
                 return false;
             }
             var ext = IOPath.GetExtension(_currentArchivePath)?.ToLowerInvariant();
-            if (ext != ".zip")
+            if (ext != ".zip" && ext != ".7z")
             {
-                StatusText?.SetValue(TextBlock.TextProperty, "当前仅支持 ZIP 写入操作");
+                StatusText?.SetValue(TextBlock.TextProperty, "当前仅支持 ZIP 和 7z 写入操作");
                 return false;
             }
             return true;
@@ -1545,7 +1546,7 @@ namespace FluentZip
 
         private async void AddFile_Click(object sender, RoutedEventArgs e)
         {
-            if (!EnsureWritableZip())
+            if (!EnsureWritableArchive())
             {
                 return;
             }
@@ -1614,7 +1615,18 @@ namespace FluentZip
 
             try
             {
-                await Task.Run(() => RebuildZipArchive(additions, removals, new List<string>()));
+                var ext = IOPath.GetExtension(_currentArchivePath)?.ToLowerInvariant();
+                
+                if (ext == ".7z")
+                {
+                    // For 7z archives, use 7za.exe
+                    await Task.Run(() => AddFilesWithSevenZipAsync(_currentArchivePath, additions, normalizedFolder, CancellationToken.None));
+                }
+                else
+                {
+                    // For ZIP archives, use the existing SharpCompress-based method
+                    await Task.Run(() => RebuildZipArchive(additions, removals, new List<string>()));
+                }
 
                 if (!string.IsNullOrEmpty(_currentArchivePath))
                 {
@@ -2026,6 +2038,74 @@ namespace FluentZip
             catch (Exception ex)
             {
                 Debug.WriteLine($"DeleteWithSevenZipAsync error: {ex}");
+                return false;
+            }
+        }
+
+        private async Task<bool> AddFilesWithSevenZipAsync(
+            string archivePath,
+            List<(string path, Func<Stream> factory)> additions,
+            string targetFolder,
+            CancellationToken ct = default)
+        {
+            try
+            {
+                if (additions == null || additions.Count == 0)
+                {
+                    return false;
+                }
+
+                // Create a temporary directory for the files to add
+                var tempDir = IOPath.Combine(IOPath.GetTempPath(), $"fz_add_{Guid.NewGuid():N}");
+                Directory.CreateDirectory(tempDir);
+
+                try
+                {
+                    // Write all files to the temp directory maintaining their structure
+                    foreach (var add in additions)
+                    {
+                        var key = NormalizePath(add.path);
+                        if (string.IsNullOrWhiteSpace(key)) continue;
+
+                        var tempFilePath = IOPath.Combine(tempDir, key.Replace("/", "\\"));
+                        var tempFileDir = IOPath.GetDirectoryName(tempFilePath);
+                        if (!string.IsNullOrEmpty(tempFileDir))
+                        {
+                            Directory.CreateDirectory(tempFileDir);
+                        }
+
+                        using (var sourceStream = add.factory.Invoke())
+                        using (var destStream = File.Create(tempFilePath))
+                        {
+                            if (sourceStream.CanSeek) sourceStream.Position = 0;
+                            await sourceStream.CopyToAsync(destStream, ct);
+                        }
+                    }
+
+                    // Build the 7za command to add files
+                    // Use "u" (update) command which adds new files and updates existing ones
+                    var args = $"u \"{archivePath}\" \"{tempDir}\\*\" -r -y";
+                    
+                    var ok = await RunSevenZipAsync(args, ct);
+                    return ok;
+                }
+                finally
+                {
+                    // Clean up temp directory
+                    try
+                    {
+                        if (Directory.Exists(tempDir))
+                        {
+                            Directory.Delete(tempDir, true);
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"AddFilesWithSevenZipAsync error: {ex}");
+                StatusText?.SetValue(TextBlock.TextProperty, $"7z 添加文件失败: {ex.Message}");
                 return false;
             }
         }
