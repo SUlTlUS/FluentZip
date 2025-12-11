@@ -1620,7 +1620,7 @@ namespace FluentZip
                 if (ext == ".7z")
                 {
                     // For 7z archives, use 7za.exe
-                    await Task.Run(() => AddFilesWithSevenZipAsync(_currentArchivePath, additions, normalizedFolder, CancellationToken.None));
+                    await AddFilesWithSevenZipAsync(_currentArchivePath, additions, CancellationToken.None);
                 }
                 else
                 {
@@ -2045,7 +2045,6 @@ namespace FluentZip
         private async Task<bool> AddFilesWithSevenZipAsync(
             string archivePath,
             List<(string path, Func<Stream> factory)> additions,
-            string targetFolder,
             CancellationToken ct = default)
         {
             try
