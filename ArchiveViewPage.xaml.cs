@@ -2084,9 +2084,10 @@ namespace FluentZip
 
                     // Build the 7za command to add files
                     // Use "u" (update) command which adds new files and updates existing ones
-                    var args = $"u \"{archivePath}\" \"{tempDir}\\*\" -r -y";
+                    // Set working directory to tempDir so files are added with relative paths
+                    var args = $"u \"{archivePath}\" * -r -y";
                     
-                    var ok = await RunSevenZipAsync(args, ct);
+                    var ok = await RunSevenZipAsync(args, tempDir, ct);
                     return ok;
                 }
                 finally
@@ -2158,6 +2159,11 @@ namespace FluentZip
 
         private async Task<bool> RunSevenZipAsync(string arguments, CancellationToken ct = default)
         {
+            return await RunSevenZipAsync(arguments, null, ct);
+        }
+
+        private async Task<bool> RunSevenZipAsync(string arguments, string? workingDirectory, CancellationToken ct = default)
+        {
             var exe = GetSevenZipExePath();
             if (exe == null)
             {
@@ -2172,7 +2178,7 @@ namespace FluentZip
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                WorkingDirectory = IOPath.GetDirectoryName(exe) ?? AppContext.BaseDirectory
+                WorkingDirectory = workingDirectory ?? IOPath.GetDirectoryName(exe) ?? AppContext.BaseDirectory
             };
             using var proc = new Process { StartInfo = psi, EnableRaisingEvents = true };
             if (!proc.Start())
