@@ -6,6 +6,9 @@ namespace FluentZip
     internal sealed class AddFilesDialogResult
     {
         public IReadOnlyList<AddFileCandidate> Files { get; init; } = Array.Empty<AddFileCandidate>();
+        public int CompressionLevel { get; init; } = 2;
+        public bool ShouldTestArchive { get; init; }
+        public bool DeleteSourceAfterAdd { get; init; }
     }
 
     internal sealed class AddFileCandidate

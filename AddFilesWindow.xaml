@@ -184,17 +184,23 @@
         </StackPanel>
 
         <!-- 更多选项 -->
-        <Grid Grid.Row="4" Margin="0,16,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <CheckBox
-                Content="更多选项..."
-                IsEnabled="False"
-                VerticalAlignment="Center"/>
-        </Grid>
+        <StackPanel Grid.Row="4" Margin="0,16,0,0" Spacing="12">
+            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                <TextBlock Text="压缩级别" VerticalAlignment="Center"/>
+                <ComboBox x:Name="CompressionLevelComboBox"
+                          Width="220"
+                          SelectedIndex="2">
+                    <ComboBoxItem Content="0 - 仅存储" Tag="0"/>
+                    <ComboBoxItem Content="1 - 快速压缩" Tag="1"/>
+                    <ComboBoxItem Content="2 - 正常压缩" Tag="2"/>
+                    <ComboBoxItem Content="3 - 极限压缩" Tag="3"/>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="24">
+                <CheckBox x:Name="TestArchiveCheckBox" Content="添加后测试压缩文件"/>
+                <CheckBox x:Name="DeleteSourceCheckBox" Content="压缩后删除原始文件"/>
+            </StackPanel>
+        </StackPanel>
 
         <!-- 底部按钮栏 -->
         <Grid Grid.Row="5" Margin="0,24,0,0">

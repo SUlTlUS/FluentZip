@@ -18,6 +18,9 @@ namespace FluentZip
     {
         private readonly ObservableCollection<AddFileCandidate> _items = new();
         private readonly IntPtr _ownerHwnd;
+        private ComboBox? _compressionLevelControl;
+        private CheckBox? _testArchiveOption;
+        private CheckBox? _deleteSourceOption;
 
         public AddFilesWindow(IntPtr ownerHwnd, string destinationDisplay)
         {
@@ -46,6 +49,15 @@ namespace FluentZip
             // 设置关闭按钮事件
             this.Closed += AddFilesWindow_Closed;
         }
+
+        private ComboBox? CompressionLevelSelector =>
+            _compressionLevelControl ??= RootGrid?.FindName("CompressionLevelComboBox") as ComboBox;
+
+        private CheckBox? TestArchiveOption =>
+            _testArchiveOption ??= RootGrid?.FindName("TestArchiveCheckBox") as CheckBox;
+
+        private CheckBox? DeleteSourceOption =>
+            _deleteSourceOption ??= RootGrid?.FindName("DeleteSourceCheckBox") as CheckBox;
 
         private void SetWindowSize()
         {
@@ -195,11 +207,34 @@ namespace FluentZip
 
             ConfirmedResult = new AddFilesDialogResult
             {
-                Files = _items.Select(item => new AddFileCandidate(item.DisplayName, item.SourcePath, item.Size)).ToList()
+                Files = _items.Select(item => new AddFileCandidate(item.DisplayName, item.SourcePath, item.Size)).ToList(),
+                CompressionLevel = GetSelectedCompressionLevel(),
+                ShouldTestArchive = IsOptionChecked(TestArchiveOption),
+                DeleteSourceAfterAdd = IsOptionChecked(DeleteSourceOption)
             };
 
             // 设置对话框结果并关闭窗口
             this.Close();
+        }
+
+        private static bool IsOptionChecked(CheckBox? option) => option?.IsChecked == true;
+
+        private int GetSelectedCompressionLevel()
+        {
+            if (CompressionLevelSelector?.SelectedItem is ComboBoxItem comboItem)
+            {
+                if (comboItem.Tag is int raw)
+                {
+                    return raw;
+                }
+
+                if (comboItem.Tag is string tagString && int.TryParse(tagString, out var parsed))
+                {
+                    return parsed;
+                }
+            }
+
+            return 2;
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
