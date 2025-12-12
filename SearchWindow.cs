@@ -35,15 +35,17 @@ namespace FluentZip
  
              // Custom title bar region for Fluent drag
              TitleDragRegion = new Grid { Height = 32, Background = new SolidColorBrush(Colors.Transparent) };
-            var titleText = new TextBlock
-            {
-                Text = "查找文件",
-                Margin = new Thickness(12, 0, 0, 0),
-                VerticalAlignment = VerticalAlignment.Center,
-                Foreground = ResolveBrush("TextFillColorPrimaryBrush", Colors.White)
-            };
+             var titleText = new TextBlock
+             {
+                 Text = "查找文件",
+                 Margin = new Thickness(12, 0, 0, 0),
+                 VerticalAlignment = VerticalAlignment.Center,
+                 Foreground = ResolveBrush("TextFillColorPrimaryBrush", Colors.White)
+             };
              TitleDragRegion.Children.Add(titleText);
              root.Children.Add(TitleDragRegion); Grid.SetRow(TitleDragRegion, 0);
+ 
+             TitleBarThemeHelper.Attach(this, root, TitleDragRegion);
  
              // Input panel (ensure visible styles)
             var inputPanel = new Grid { Margin = new Thickness(8,4,8,12), ColumnSpacing = 16 };
@@ -116,26 +118,6 @@ namespace FluentZip
              root.Children.Add(contentGrid); Grid.SetRow(contentGrid, 2);
  
              this.Content = root;
- 
-             // Fluent title bar settings
-             try
-             {
-                 var titleBar = AppWindow != null ? AppWindow.TitleBar : null;
-                 if (titleBar != null)
-                 {
-                     titleBar.ExtendsContentIntoTitleBar = true;
-                     titleBar.ButtonBackgroundColor = Colors.Transparent;
-                     titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
-                     titleBar.ButtonForegroundColor = Colors.White;
-                     titleBar.ButtonInactiveForegroundColor = Colors.White;
-                     titleBar.BackgroundColor = Colors.Transparent;
-                     titleBar.ForegroundColor = Colors.White;
-                 }
-             }
-             catch { }
- 
-             // Set custom title bar drag region
-             try { SetTitleBar(TitleDragRegion); } catch { }
  
              try { AppWindow?.Resize(new SizeInt32(820, 560)); } catch { }
  

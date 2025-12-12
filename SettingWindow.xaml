@@ -15,11 +15,16 @@
 
     <Grid Padding="24" RowSpacing="16">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Spacing="12">
+        <Grid x:Name="TitleBarDragRegion" Grid.Row="0" Height="32" Background="Transparent">
+            <TextBlock Text="设置" VerticalAlignment="Center" FontSize="18"/>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Spacing="12">
             <TextBlock Text="外观" FontSize="20" Margin="0,0,0,4" />
             <TextBlock Text="主题" Style="{StaticResource SubtitleTextBlockStyle}" />
             <RadioButtons x:Name="ThemeRadioControl" SelectionChanged="ThemeRadio_SelectionChanged">
@@ -29,7 +34,7 @@
             </RadioButtons>
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
             <Button Content="关闭" Click="CloseButton_Click" />
         </StackPanel>
     </Grid>

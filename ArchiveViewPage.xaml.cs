@@ -103,6 +103,7 @@ namespace FluentZip
         public ArchiveViewPage()
         {
             this.InitializeComponent();
+            
             UpdateCodePageButtonState(null);
             FileListView.ItemsSource = FileItems;
             CacheHeaderDefaultWidths();
@@ -1602,7 +1603,7 @@ namespace FluentZip
 
                 var physicalPath = file.SourcePath;
                 additions.Add((normalizedKey, () => File.OpenRead(physicalPath)));
-            }
+            };
 
             if (additions.Count == 0)
             {
@@ -2215,7 +2216,16 @@ namespace FluentZip
 
         private void NewArchive_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: 实现新建归档的逻辑
+            try
+            {
+                var window = new CreateNewZip();
+                window.Activate();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"CreateNewZip 打开失败: {ex.Message}");
+                StatusText?.SetValue(TextBlock.TextProperty, "无法打开新建窗口");
+            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -2779,6 +2789,7 @@ namespace FluentZip
             }
         }
     }
+
 
     public class FolderNode
     {

@@ -243,7 +243,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- 左侧导航树 -->
-            <Grid Grid.Column="0" Padding="0,0,12,0">
+            <Grid Grid.Column="0" Padding="0,0,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
@@ -329,7 +329,7 @@
             <controls:GridSplitter x:Name="FolderSplitter" Grid.Column="1" Width="6" ResizeBehavior="BasedOnAlignment" ResizeDirection="Columns" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Stretch"/>
 
             <!-- 右侧文件列表 -->
-            <Border Grid.Column="2" Margin="0,0,12,12" Background="{ThemeResource LayerFillColorDefaultBrush}" BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}" BorderThickness="0" CornerRadius="8">
+            <Border Grid.Column="2" Margin="0,0,0,12" Background="{ThemeResource LayerFillColorDefaultBrush}" BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}" BorderThickness="0" CornerRadius="8">
                 <!-- 允许横向滚动，以便只改变被拖动列的宽度，其它列不受影响 -->
                 <ScrollViewer HorizontalScrollBarVisibility="Auto"
                               HorizontalScrollMode="Enabled"
@@ -488,7 +488,7 @@
             <!-- 图像预览面板 -->
             <Border x:Name="PreviewPane"
                     Grid.Column="4"
-                    Margin="0,0,0,12"
+                    Margin="0,0,12,12"
                     Background="{ThemeResource LayerFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
                     BorderThickness="0"
@@ -545,7 +545,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock x:Name="StatusText" Text="就绪" Style="{StaticResource CaptionTextBlockStyle}"/>
+            <TextBlock x:Name="StatusText" Text="就绪" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}"/>
 
             <ToggleButton 
               Grid.Column="1"

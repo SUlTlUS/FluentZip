@@ -14,7 +14,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="AdvencedSettings.xaml" />
     <None Remove="ArchiveViewPage.xaml" />
+    <None Remove="CreateNewZip.xaml" />
     <None Remove="HomePage.xaml" />
     <None Remove="SettingWindow.xaml" />
   </ItemGroup>
@@ -159,6 +161,16 @@
     <Content Update="Assets\SevenZip\x64\7zxa.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="AdvencedSettings.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="CreateNewZip.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="AddFilesWindow.xaml">

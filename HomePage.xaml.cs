@@ -2,6 +2,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Windows.Storage;
 using Windows.Storage.Pickers;
 // ★★★ 确保引用了这个，否则无法处理窗口句柄 ★★★
 using WinRT.Interop;
@@ -40,10 +42,14 @@ namespace FluentZip
                 InitializeWithWindow.Initialize(openPicker, hWnd);
 
                 var file = await openPicker.PickSingleFileAsync();
-                if (file != null)
+                if (file == null || string.IsNullOrWhiteSpace(file.Path))
                 {
-                    GetHostFrame()?.Navigate(typeof(ArchiveViewPage), file.Path);
+                    return;
                 }
+
+                AddRecentFile(file.Path);
+                GetHostFrame()?.Navigate(typeof(ArchiveViewPage), file.Path);
+
             }
             catch (Exception ex)
             {
@@ -55,20 +61,14 @@ namespace FluentZip
         // ... NewArchive_Click 代码同理 ...
         private async void NewArchive_Click(object sender, RoutedEventArgs e)
         {
-            var savePicker = new FileSavePicker();
-            savePicker.SuggestedStartLocation = PickerLocationId.Desktop;
-            savePicker.SuggestedFileName = "NewArchive";
-            savePicker.FileTypeChoices.Add("Zip Compressed File", new List<string>() { ".zip" });
-
-            var window = App.StartupWindow;
-            var hWnd = WindowNative.GetWindowHandle(window);
-            InitializeWithWindow.Initialize(savePicker, hWnd);
-
-            var file = await savePicker.PickSaveFileAsync();
-            if (file != null)
+            try
             {
-                await Windows.Storage.FileIO.WriteBytesAsync(file, new byte[] { 0x50, 0x4B, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 });
-                GetHostFrame()?.Navigate(typeof(ArchiveViewPage), file.Path);
+                var window = new CreateNewZip();
+                window.Activate();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"打开新建窗口失败: {ex.Message}");
             }
         }
 
@@ -76,6 +76,28 @@ namespace FluentZip
         {
             if (Frame != null) return Frame;
             return App.StartupWindow?.Content as Frame;
+        }
+
+        private static void AddRecentFile(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return;
+            }
+
+            var settings = ApplicationData.Current.LocalSettings;
+            var existing = (settings.Values["RecentOpenedFiles"] as string ?? string.Empty)
+                .Split('|', StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
+
+            existing.RemoveAll(p => string.Equals(p, path, StringComparison.OrdinalIgnoreCase));
+            existing.Insert(0, path);
+            if (existing.Count > 10)
+            {
+                existing = existing.Take(10).ToList();
+            }
+
+            settings.Values["RecentOpenedFiles"] = string.Join("|", existing);
         }
     }
 }

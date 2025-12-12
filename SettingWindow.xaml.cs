@@ -24,6 +24,7 @@ namespace FluentZip
             if (Content is FrameworkElement root)
             {
                 ThemeService.RegisterRoot(root);
+                TitleBarThemeHelper.Attach(this, root, TitleBarDragRegion);
             }
 
             _isInitializing = true;

@@ -26,14 +26,17 @@ namespace FluentZip
         {
             _ownerHwnd = ownerHwnd;
             InitializeComponent();
+            ExtendsContentIntoTitleBar = true;
+            
 
             // 设置窗口尺寸（也可以在构造函数中设置）
             SetWindowSize();
 
             // 设置主题
-            if (ThemeService.CurrentTheme != null)
+            if (RootGrid != null)
             {
-                RootGrid.RequestedTheme = ThemeService.CurrentTheme;
+                ThemeService.RegisterRoot(RootGrid);
+                TitleBarThemeHelper.Attach(this, RootGrid, AppTitleBar);
             }
 
             // 更新提示文本
@@ -90,7 +93,7 @@ namespace FluentZip
         {
             folder = (folder ?? string.Empty).Replace("\\", "/").Trim('/');
             var normalized = string.IsNullOrEmpty(folder) ? "/" : $"/{folder}";
-            return $"当前目标: {normalized}";
+            return $"添加路径: {normalized}";
         }
 
         private void Items_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -215,6 +218,28 @@ namespace FluentZip
 
             // 设置对话框结果并关闭窗口
             this.Close();
+        }
+
+        private async void AdvancedSettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var control = new AdvencedSettings();
+                var dialog = new ContentDialog
+                {
+                    Title = "高级设置",
+                    Content = control,
+                    CloseButtonText = "关闭",
+                    XamlRoot = (RootGrid ?? Content as FrameworkElement)?.XamlRoot,
+                    RequestedTheme = ThemeService.CurrentTheme
+                };
+
+                await dialog.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Advanced settings dialog failed: {ex.Message}");
+            }
         }
 
         private static bool IsOptionChecked(CheckBox? option) => option?.IsChecked == true;
