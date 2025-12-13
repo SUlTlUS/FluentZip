@@ -7,7 +7,8 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:controls="using:CommunityToolkit.WinUI.Controls"
   mc:Ignorable="d"
-  Background="Transparent">
+  Background="Transparent"
+  x:Name="ArchivePageRoot">
 
     <Page.Resources>
         <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundBrush" Color="Transparent" />
@@ -17,43 +18,53 @@
         <SolidColorBrush x:Key="DataGridBackgroundBrush" Color="Transparent" />
         <SolidColorBrush x:Key="DataGridRowSelectedBackgroundBrush" Color="{ThemeResource SystemAccentColor}" Opacity="0.25" />
         <SolidColorBrush x:Key="DataGridRowSelectedHoveredBackgroundBrush" Color="{ThemeResource SystemAccentColor}" Opacity="0.38" />
-        <ItemsPanelTemplate x:Key="VerticalListPanel">
+        <local:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter" />
+        <local:DoubleToVisibilityConverter x:Key="DoubleToVisibilityConverter" />
+         <ItemsPanelTemplate x:Key="VerticalListPanel">
             <ItemsStackPanel Orientation="Vertical"/>
         </ItemsPanelTemplate>
         <ItemsPanelTemplate x:Key="WrapPanelTemplate">
             <ItemsWrapGrid Orientation="Vertical"/>
         </ItemsPanelTemplate>
-        <DataTemplate x:Key="DetailItemTemplate">
+        <DataTemplate x:Key="DetailItemTemplate" x:DataType="local:FileItem">
             <Grid Height="40">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="{Binding ElementName=HeaderCol0, Path=ActualWidth}"/>
-                    <ColumnDefinition Width="{Binding ElementName=HeaderCol1, Path=ActualWidth}"/>
-                    <ColumnDefinition Width="{Binding ElementName=HeaderCol2, Path=ActualWidth}"/>
-                    <ColumnDefinition Width="{Binding ElementName=HeaderCol3, Path=ActualWidth}"/>
-                    <ColumnDefinition Width="{Binding ElementName=HeaderCol4, Path=ActualWidth}"/>
-                    <ColumnDefinition Width="{Binding ElementName=HeaderCol5, Path=ActualWidth}"/>
-                    <ColumnDefinition Width="{Binding ElementName=HeaderCol6, Path=ActualWidth}"/>
-                    <ColumnDefinition Width="{Binding ElementName=HeaderCol7, Path=ActualWidth}"/>
-                    <ColumnDefinition Width="{Binding ElementName=HeaderCol8, Path=ActualWidth}"/>
-                    <ColumnDefinition Width="{Binding ElementName=HeaderCol9, Path=ActualWidth}"/>
-                    <ColumnDefinition Width="{Binding ElementName=HeaderCol10, Path=ActualWidth}"/>
-                    <ColumnDefinition Width="{Binding ElementName=HeaderCol11, Path=ActualWidth}"/>
+                    <ColumnDefinition Width="{Binding ElementName=ArchivePageRoot, Path=DetailColumn0Width, Converter={StaticResource DoubleToGridLengthConverter}}"/>
+                    <ColumnDefinition Width="{Binding ElementName=ArchivePageRoot, Path=DetailColumn1Width, Converter={StaticResource DoubleToGridLengthConverter}}"/>
+                    <ColumnDefinition Width="{Binding ElementName=ArchivePageRoot, Path=DetailColumn2Width, Converter={StaticResource DoubleToGridLengthConverter}}"/>
+                    <ColumnDefinition Width="{Binding ElementName=ArchivePageRoot, Path=DetailColumn3Width, Converter={StaticResource DoubleToGridLengthConverter}}"/>
+                    <ColumnDefinition Width="{Binding ElementName=ArchivePageRoot, Path=DetailColumn4Width, Converter={StaticResource DoubleToGridLengthConverter}}"/>
+                    <ColumnDefinition Width="{Binding ElementName=ArchivePageRoot, Path=DetailColumn5Width, Converter={StaticResource DoubleToGridLengthConverter}}"/>
+                    <ColumnDefinition Width="{Binding ElementName=ArchivePageRoot, Path=DetailColumn6Width, Converter={StaticResource DoubleToGridLengthConverter}}"/>
+                    <ColumnDefinition Width="{Binding ElementName=ArchivePageRoot, Path=DetailColumn7Width, Converter={StaticResource DoubleToGridLengthConverter}}"/>
+                    <ColumnDefinition Width="{Binding ElementName=ArchivePageRoot, Path=DetailColumn8Width, Converter={StaticResource DoubleToGridLengthConverter}}"/>
+                    <ColumnDefinition Width="{Binding ElementName=ArchivePageRoot, Path=DetailColumn9Width, Converter={StaticResource DoubleToGridLengthConverter}}"/>
+                    <ColumnDefinition Width="{Binding ElementName=ArchivePageRoot, Path=DetailColumn10Width, Converter={StaticResource DoubleToGridLengthConverter}}"/>
+                    <ColumnDefinition Width="{Binding ElementName=ArchivePageRoot, Path=DetailColumn11Width, Converter={StaticResource DoubleToGridLengthConverter}}"/>
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0" Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Image Source="{Binding IconImage}" Stretch="Uniform" />
                     <FontIcon Glyph="{Binding IconGlyph}" Foreground="{Binding IconColor}" FontSize="16" />
                 </Grid>
                 <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource TextFillColorPrimaryBrush}" FontWeight="Normal"/>
-                <TextBlock Grid.Column="2" Text="{Binding Size}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"/>
-                <TextBlock Grid.Column="3" Text="{Binding ModifiedTime}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"/>
-                <TextBlock Grid.Column="4" Text="{Binding Type}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"/>
-                <TextBlock Grid.Column="5" Text="{Binding CompressedSize}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"/>
-                <TextBlock Grid.Column="6" Text="{Binding CompressionMethod}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"/>
-                <TextBlock Grid.Column="7" Text="{Binding EncryptionMethod}" VerticalAlignment="Center" Foreground="{Binding IconColor}" FontSize="13" Margin="10,0,0,0"/>
-                <TextBlock Grid.Column="8" Text="{Binding CrcCheck}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"/>
-                <TextBlock Grid.Column="9" Text="{Binding FileAttributes}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"/>
-                <TextBlock Grid.Column="10" Text="{Binding Remarks}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"/>
-                <TextBlock Grid.Column="11" Text="{Binding ExtraInfo}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"/>
+                <TextBlock Grid.Column="2" Text="{Binding Size}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"
+                           Visibility="{Binding ElementName=ArchivePageRoot, Path=DetailColumn2Width, Converter={StaticResource DoubleToVisibilityConverter}}"/>
+                <TextBlock Grid.Column="3" Text="{Binding ModifiedTime}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"
+                           Visibility="{Binding ElementName=ArchivePageRoot, Path=DetailColumn3Width, Converter={StaticResource DoubleToVisibilityConverter}}"/>
+                <TextBlock Grid.Column="4" Text="{Binding Type}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"
+                           Visibility="{Binding ElementName=ArchivePageRoot, Path=DetailColumn4Width, Converter={StaticResource DoubleToVisibilityConverter}}"/>
+                <TextBlock Grid.Column="5" Text="{Binding CompressedSize}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"
+                           Visibility="{Binding ElementName=ArchivePageRoot, Path=DetailColumn5Width, Converter={StaticResource DoubleToVisibilityConverter}}"/>
+                <TextBlock Grid.Column="6" Text="{Binding CompressionMethod}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"
+                           Visibility="{Binding ElementName=ArchivePageRoot, Path=DetailColumn6Width, Converter={StaticResource DoubleToVisibilityConverter}}"/>
+                <TextBlock Grid.Column="7" Text="{Binding EncryptionMethod}" VerticalAlignment="Center" Foreground="{Binding IconColor}" FontSize="13" Margin="10,0,0,0"
+                           Visibility="{Binding ElementName=ArchivePageRoot, Path=DetailColumn7Width, Converter={StaticResource DoubleToVisibilityConverter}}"/>
+                <TextBlock Grid.Column="8" Text="{Binding CrcCheck}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"
+                           Visibility="{Binding ElementName=ArchivePageRoot, Path=DetailColumn8Width, Converter={StaticResource DoubleToVisibilityConverter}}"/>
+                <TextBlock Grid.Column="9" Text="{Binding FileAttributes}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0"
+                           Visibility="{Binding ElementName=ArchivePageRoot, Path=DetailColumn9Width, Converter={StaticResource DoubleToVisibilityConverter}}"/>
+                <TextBlock Grid.Column="10" Text="{Binding Remarks}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0" Visibility="{Binding ElementName=ArchivePageRoot, Path=DetailColumn10Width, Converter={StaticResource DoubleToVisibilityConverter}}"/>
+                <TextBlock Grid.Column="11" Text="{Binding ExtraInfo}" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13" Margin="10,0,0,0" Visibility="{Binding ElementName=ArchivePageRoot, Path=DetailColumn11Width, Converter={StaticResource DoubleToVisibilityConverter}}"/>
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="ListItemTemplate">
@@ -65,7 +76,7 @@
                 <Image Source="{Binding IconImage}" Width="24" Height="24" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" Spacing="2">
                     <TextBlock Text="{Binding Name}" Foreground="{ThemeResource TextFillColorPrimaryBrush}" TextTrimming="CharacterEllipsis"/>
-                    <TextBlock Text="{Binding Remarks}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="12" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock Text="{Binding Remarks}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="12" TextTrimming="CharacterEllipsis" />
                 </StackPanel>
             </Grid>
         </DataTemplate>

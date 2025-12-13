@@ -103,10 +103,15 @@ namespace FluentZip
         public ArchiveViewPage()
         {
             this.InitializeComponent();
-            
+ 
             UpdateCodePageButtonState(null);
             FileListView.ItemsSource = FileItems;
             CacheHeaderDefaultWidths();
+            if (HeaderGrid != null)
+            {
+                HeaderGrid.SizeChanged += HeaderGrid_SizeChanged;
+            }
+            UpdateDetailColumnWidths();
             SetTreePaneVisibility(true, false);
             FileListView.IsItemClickEnabled = true;
             FileListView.ItemClick += FileListView_ItemClick;
@@ -141,10 +146,13 @@ namespace FluentZip
                 }
             }
             catch { }
+
+            UpdateDetailColumnWidths();
         }
 
         private static double GetColumnFallbackWidth(int columnIndex) => columnIndex switch
         {
+            0 => 40,
             1 => 250,
             2 => 120,
             3 => 160,
@@ -209,6 +217,7 @@ namespace FluentZip
             }
 
             UpdateHeaderElementVisibility(columnIndex, isVisible);
+            UpdateDetailColumnWidths();
         }
 
         private void UpdateHeaderElementVisibility(int columnIndex, bool isVisible)
@@ -934,7 +943,7 @@ namespace FluentZip
                 _currentArchiveComment = string.Empty;
                 var commentTask = Task.Run(() => TryReadArchiveComment(path));
 
-                // 清空现有 UI
+                // 清空现有UI
                 FileItems.Clear();
                 _allFilesCache.Clear();
                 FolderTreeView.RootNodes.Clear();
@@ -2198,6 +2207,7 @@ namespace FluentZip
             var col = HeaderGrid.ColumnDefinitions[_resizeColIndex];
             double newWidth = Math.Max(GetColumnMinWidth(_resizeColIndex), _resizeStartWidth + delta);
             col.Width = new GridLength(newWidth, GridUnitType.Pixel);
+            UpdateDetailColumnWidths();
             e.Handled = true;
         }
 
@@ -2211,6 +2221,7 @@ namespace FluentZip
             _resizeColIndex = -1;
             _resizeStartX = 0;
             _resizeStartWidth = 0;
+            UpdateDetailColumnWidths();
             e.Handled = true;
         }
 
@@ -2788,6 +2799,68 @@ namespace FluentZip
                     break;
             }
         }
+
+        private void HeaderGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateDetailColumnWidths();
+        }
+
+        private void UpdateDetailColumnWidths()
+        {
+            DetailColumn0Width = ResolveColumnWidth(HeaderCol0, GetColumnFallbackWidth(0));
+            DetailColumn1Width = ResolveColumnWidth(HeaderCol1, GetColumnFallbackWidth(1));
+            DetailColumn2Width = ResolveColumnWidth(HeaderCol2, GetColumnFallbackWidth(2));
+            DetailColumn3Width = ResolveColumnWidth(HeaderCol3, GetColumnFallbackWidth(3));
+            DetailColumn4Width = ResolveColumnWidth(HeaderCol4, GetColumnFallbackWidth(4));
+            DetailColumn5Width = ResolveColumnWidth(HeaderCol5, GetColumnFallbackWidth(5));
+            DetailColumn6Width = ResolveColumnWidth(HeaderCol6, GetColumnFallbackWidth(6));
+            DetailColumn7Width = ResolveColumnWidth(HeaderCol7, GetColumnFallbackWidth(7));
+            DetailColumn8Width = ResolveColumnWidth(HeaderCol8, GetColumnFallbackWidth(8));
+            DetailColumn9Width = ResolveColumnWidth(HeaderCol9, GetColumnFallbackWidth(9));
+            DetailColumn10Width = ResolveColumnWidth(HeaderCol10, GetColumnFallbackWidth(10));
+            DetailColumn11Width = ResolveColumnWidth(HeaderCol11, GetColumnFallbackWidth(11));
+        }
+
+        private static double ResolveColumnWidth(ColumnDefinition column, double fallback)
+        {
+            if (column == null)
+            {
+                return fallback;
+            }
+
+            if (column.Width.IsAbsolute)
+            {
+                return column.Width.Value;
+            }
+
+            return column.ActualWidth > 0 ? column.ActualWidth : fallback;
+        }
+
+        public double DetailColumn0Width { get => (double)GetValue(DetailColumn0WidthProperty); set => SetValue(DetailColumn0WidthProperty, value); }
+        public double DetailColumn1Width { get => (double)GetValue(DetailColumn1WidthProperty); set => SetValue(DetailColumn1WidthProperty, value); }
+        public double DetailColumn2Width { get => (double)GetValue(DetailColumn2WidthProperty); set => SetValue(DetailColumn2WidthProperty, value); }
+        public double DetailColumn3Width { get => (double)GetValue(DetailColumn3WidthProperty); set => SetValue(DetailColumn3WidthProperty, value); }
+        public double DetailColumn4Width { get => (double)GetValue(DetailColumn4WidthProperty); set => SetValue(DetailColumn4WidthProperty, value); }
+        public double DetailColumn5Width { get => (double)GetValue(DetailColumn5WidthProperty); set => SetValue(DetailColumn5WidthProperty, value); }
+        public double DetailColumn6Width { get => (double)GetValue(DetailColumn6WidthProperty); set => SetValue(DetailColumn6WidthProperty, value); }
+        public double DetailColumn7Width { get => (double)GetValue(DetailColumn7WidthProperty); set => SetValue(DetailColumn7WidthProperty, value); }
+        public double DetailColumn8Width { get => (double)GetValue(DetailColumn8WidthProperty); set => SetValue(DetailColumn8WidthProperty, value); }
+        public double DetailColumn9Width { get => (double)GetValue(DetailColumn9WidthProperty); set => SetValue(DetailColumn9WidthProperty, value); }
+        public double DetailColumn10Width { get => (double)GetValue(DetailColumn10WidthProperty); set => SetValue(DetailColumn10WidthProperty, value); }
+        public double DetailColumn11Width { get => (double)GetValue(DetailColumn11WidthProperty); set => SetValue(DetailColumn11WidthProperty, value); }
+
+        public static readonly DependencyProperty DetailColumn0WidthProperty = DependencyProperty.Register(nameof(DetailColumn0Width), typeof(double), typeof(ArchiveViewPage), new PropertyMetadata(40d));
+        public static readonly DependencyProperty DetailColumn1WidthProperty = DependencyProperty.Register(nameof(DetailColumn1Width), typeof(double), typeof(ArchiveViewPage), new PropertyMetadata(250d));
+        public static readonly DependencyProperty DetailColumn2WidthProperty = DependencyProperty.Register(nameof(DetailColumn2Width), typeof(double), typeof(ArchiveViewPage), new PropertyMetadata(120d));
+        public static readonly DependencyProperty DetailColumn3WidthProperty = DependencyProperty.Register(nameof(DetailColumn3Width), typeof(double), typeof(ArchiveViewPage), new PropertyMetadata(160d));
+        public static readonly DependencyProperty DetailColumn4WidthProperty = DependencyProperty.Register(nameof(DetailColumn4Width), typeof(double), typeof(ArchiveViewPage), new PropertyMetadata(120d));
+        public static readonly DependencyProperty DetailColumn5WidthProperty = DependencyProperty.Register(nameof(DetailColumn5Width), typeof(double), typeof(ArchiveViewPage), new PropertyMetadata(120d));
+        public static readonly DependencyProperty DetailColumn6WidthProperty = DependencyProperty.Register(nameof(DetailColumn6Width), typeof(double), typeof(ArchiveViewPage), new PropertyMetadata(140d));
+        public static readonly DependencyProperty DetailColumn7WidthProperty = DependencyProperty.Register(nameof(DetailColumn7Width), typeof(double), typeof(ArchiveViewPage), new PropertyMetadata(140d));
+        public static readonly DependencyProperty DetailColumn8WidthProperty = DependencyProperty.Register(nameof(DetailColumn8Width), typeof(double), typeof(ArchiveViewPage), new PropertyMetadata(120d));
+        public static readonly DependencyProperty DetailColumn9WidthProperty = DependencyProperty.Register(nameof(DetailColumn9Width), typeof(double), typeof(ArchiveViewPage), new PropertyMetadata(140d));
+        public static readonly DependencyProperty DetailColumn10WidthProperty = DependencyProperty.Register(nameof(DetailColumn10Width), typeof(double), typeof(ArchiveViewPage), new PropertyMetadata(160d));
+        public static readonly DependencyProperty DetailColumn11WidthProperty = DependencyProperty.Register(nameof(DetailColumn11Width), typeof(double), typeof(ArchiveViewPage), new PropertyMetadata(160d));
     }
 
 
