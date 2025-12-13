@@ -24,7 +24,7 @@
             <ItemsWrapGrid Orientation="Vertical"/>
         </ItemsPanelTemplate>
         <DataTemplate x:Key="DetailItemTemplate">
-            <Grid Height="40" Padding="0,0,12,0">
+            <Grid Height="40">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="{Binding ElementName=HeaderCol0, Path=ActualWidth}"/>
                     <ColumnDefinition Width="{Binding ElementName=HeaderCol1, Path=ActualWidth}"/>
