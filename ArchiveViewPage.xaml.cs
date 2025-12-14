@@ -128,7 +128,8 @@ namespace FluentZip
             _clearHistoryMenuItem = FindName("ClearHistoryMenuItem") as MenuFlyoutItem;
             _noHistoryMenuItem = FindName("NoHistoryItem") as MenuFlyoutItem;
             SetPreviewPaneVisibility(ToggleImagePreviewItem?.IsChecked != false);
-        }
+            UpdateNavigateUpButtonState();
+         }
 
         private void CacheHeaderDefaultWidths()
         {
@@ -504,63 +505,77 @@ namespace FluentZip
             }
         }
 
-        private void OpenFlyout_Opening(object sender, object e)
+        private void NavigateUp_Click(object sender, RoutedEventArgs e)
         {
-            var recentSubItem = _recentFilesSubItem;
-            if (recentSubItem == null) return;
-
-            foreach (var item in _historyMenuItems)
+            var parentNode = FolderTreeView?.SelectedNode?.Parent;
+            if (parentNode == null)
             {
-                recentSubItem.Items.Remove(item);
-            }
-            _historyMenuItems.Clear();
-
-            var localSettings = ApplicationData.Current.LocalSettings;
-            string historyRaw = localSettings.Values[RecentFilesKey] as string;
-            bool hasHistory = !string.IsNullOrEmpty(historyRaw);
-
-            if (_noHistoryMenuItem != null)
-            {
-                _noHistoryMenuItem.Visibility = hasHistory ? Visibility.Collapsed : Visibility.Visible;
-            }
-            if (_recentHistorySeparator != null)
-            {
-                _recentHistorySeparator.Visibility = hasHistory ? Visibility.Visible : Visibility.Collapsed;
-            }
-            if (_clearHistoryMenuItem != null)
-            {
-                _clearHistoryMenuItem.Visibility = hasHistory ? Visibility.Visible : Visibility.Collapsed;
+                StatusText?.SetValue(TextBlock.TextProperty, "已在根目录");
+                UpdateNavigateUpButtonState();
+                return;
             }
 
-            if (!hasHistory || recentSubItem.Items == null) return;
-
-            var paths = historyRaw.Split('|');
-            int insertIndex = _recentHistorySeparator != null
-                ? recentSubItem.Items.IndexOf(_recentHistorySeparator)
-                : recentSubItem.Items.Count;
-            if (insertIndex < 0) insertIndex = recentSubItem.Items.Count;
-
-            foreach (var path in paths)
-            {
-                if (string.IsNullOrWhiteSpace(path)) continue;
-
-                var item = new MenuFlyoutItem
-                {
-                    Text = path,
-                    Icon = new SymbolIcon(Symbol.OpenFile),
-                    Tag = "History"
-                };
-                item.Click += (s, a) =>
-                {
-                    LoadArchive(path);
-                    AddToHistory(path);
-                };
-
-                recentSubItem.Items.Insert(insertIndex, item);
-                _historyMenuItems.Add(item);
-                insertIndex++;
-            }
+            ExpandAndSelectNode(parentNode);
+            UpdateFileList(parentNode);
         }
+ 
+         private void OpenFlyout_Opening(object sender, object e)
+         {
+             var recentSubItem = _recentFilesSubItem;
+             if (recentSubItem == null) return;
+
+             foreach (var item in _historyMenuItems)
+             {
+                 recentSubItem.Items.Remove(item);
+             }
+             _historyMenuItems.Clear();
+
+             var localSettings = ApplicationData.Current.LocalSettings;
+             string historyRaw = localSettings.Values[RecentFilesKey] as string;
+             bool hasHistory = !string.IsNullOrEmpty(historyRaw);
+
+             if (_noHistoryMenuItem != null)
+             {
+                 _noHistoryMenuItem.Visibility = hasHistory ? Visibility.Collapsed : Visibility.Visible;
+             }
+             if (_recentHistorySeparator != null)
+             {
+                 _recentHistorySeparator.Visibility = hasHistory ? Visibility.Visible : Visibility.Collapsed;
+             }
+             if (_clearHistoryMenuItem != null)
+             {
+                 _clearHistoryMenuItem.Visibility = hasHistory ? Visibility.Visible : Visibility.Collapsed;
+             }
+
+             if (!hasHistory || recentSubItem.Items == null) return;
+
+             var paths = historyRaw.Split('|');
+             int insertIndex = _recentHistorySeparator != null
+                 ? recentSubItem.Items.IndexOf(_recentHistorySeparator)
+                 : recentSubItem.Items.Count;
+             if (insertIndex < 0) insertIndex = recentSubItem.Items.Count;
+
+             foreach (var path in paths)
+             {
+                 if (string.IsNullOrWhiteSpace(path)) continue;
+
+                 var item = new MenuFlyoutItem
+                 {
+                     Text = path,
+                     Icon = new SymbolIcon(Symbol.OpenFile),
+                     Tag = "History"
+                 };
+                 item.Click += (s, a) =>
+                 {
+                     LoadArchive(path);
+                     AddToHistory(path);
+                 };
+
+                 recentSubItem.Items.Insert(insertIndex, item);
+                 _historyMenuItems.Add(item);
+                 insertIndex++;
+             }
+         }
 
         private void FileListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -587,40 +602,52 @@ namespace FluentZip
             catch { }
         }
 
-        private void UpdateCodePageButtonState(string? path)
+        private void UpdateNavigateUpButtonState()
         {
-            if (CodePageButton != null)
+            if (NavigateUpButton == null)
             {
+                return;
+            }
+
+            bool canNavigateUp = FolderTreeView?.SelectedNode?.Parent != null;
+            NavigateUpButton.IsEnabled = canNavigateUp;
+            NavigateUpButton.Opacity = canNavigateUp ? 1.0 : 0.5;
+        }
+ 
+         private void UpdateCodePageButtonState(string? path)
+         {
+             if (CodePageButton != null)
+             {
                 var ext = IOPath.GetExtension(path ?? string.Empty);
                 bool isSupported = !string.IsNullOrEmpty(path) &&
                     Array.Exists(_codePageSupportedExtensions, s =>
                         string.Equals(s, ext, StringComparison.OrdinalIgnoreCase));
                 CodePageButton.IsEnabled = isSupported;
                 CodePageButton.Opacity = isSupported ? 1.0 : 0.5;
-            }
+             }
 
             UpdateArchiveActionStates(path);
-        }
+         }
 
-        private void UpdateArchiveActionStates(string? path)
-        {
-            string extension = IOPath.GetExtension(path ?? string.Empty);
-            bool hasArchive = !string.IsNullOrEmpty(path);
-            bool canAdd = hasArchive && string.Equals(extension, ".zip", StringComparison.OrdinalIgnoreCase);
+         private void UpdateArchiveActionStates(string? path)
+         {
+             string extension = IOPath.GetExtension(path ?? string.Empty);
+             bool hasArchive = !string.IsNullOrEmpty(path);
+             bool canAdd = hasArchive && string.Equals(extension, ".zip", StringComparison.OrdinalIgnoreCase);
 
-            if (AddButton != null)
-            {
-                AddButton.IsEnabled = canAdd;
-                AddButton.Opacity = canAdd ? 1.0 : 0.5;
-            }
-            if (_contextAddItem != null)
-            {
-                _contextAddItem.IsEnabled = canAdd;
-            }
+             if (AddButton != null)
+             {
+                 AddButton.IsEnabled = canAdd;
+                 AddButton.Opacity = canAdd ? 1.0 : 0.5;
+             }
+             if (_contextAddItem != null)
+             {
+                 _contextAddItem.IsEnabled = canAdd;
+             }
 
-            _canDeleteCurrentArchive = hasArchive && !string.Equals(extension, ".rar", StringComparison.OrdinalIgnoreCase);
-            UpdateDeleteButtonState();
-        }
+             _canDeleteCurrentArchive = hasArchive && !string.Equals(extension, ".rar", StringComparison.OrdinalIgnoreCase);
+             UpdateDeleteButtonState();
+         }
 
         private bool TryGetCurrentArchivePath(out string archivePath)
         {
@@ -1307,6 +1334,7 @@ namespace FluentZip
                 FileItems.Add(file);
             }
             StatusText?.SetValue(TextBlock.TextProperty, $"选中: {currentFolderData.Name} - 共 {FileItems.Count} 个项目");
+            UpdateNavigateUpButtonState();
             UpdatePreviewPane();
         }
 
@@ -2182,7 +2210,7 @@ namespace FluentZip
         }
 
         private void HeaderResizeGrip_PointerPressed(object sender, PointerRoutedEventArgs e)
-        {
+ {
             if (HeaderGrid?.ColumnDefinitions == null) return;
             if (sender is not FrameworkElement grip) return;
             if (!TryParseColumnIndex(grip.Tag, out int columnIndex)) return;

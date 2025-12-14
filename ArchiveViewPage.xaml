@@ -341,38 +341,39 @@
 
             <!-- 右侧文件列表 -->
             <Border Grid.Column="2" Margin="0,0,0,12" Background="{ThemeResource LayerFillColorDefaultBrush}" BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}" BorderThickness="0" CornerRadius="8">
-                <!-- 允许横向滚动，以便只改变被拖动列的宽度，其它列不受影响 -->
-                <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                              HorizontalScrollMode="Enabled"
-                              VerticalScrollBarVisibility="Auto"
-                              VerticalScrollMode="Enabled"
-                              ZoomMode="Disabled">
-                    <Grid Padding="0,0,0,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="40"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
+                <Grid>
+                    <!-- 允许横向滚动，以便只改变被拖动列的宽度，其它列不受影响 -->
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                  HorizontalScrollMode="Enabled"
+                                  VerticalScrollBarVisibility="Auto"
+                                  VerticalScrollMode="Enabled"
+                                  ZoomMode="Disabled">
+                        <Grid Padding="0,0,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
 
-                        <!-- 表头 -->
-                        <Grid Grid.Row="0" x:Name="HeaderGrid" BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Margin="4,0,4,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition x:Name="HeaderCol0" Width="40"/>
-                                <ColumnDefinition x:Name="HeaderCol1" Width="250" MinWidth="100"/>
-                                <ColumnDefinition x:Name="HeaderCol2" Width="120" MinWidth="60"/>
-                                <ColumnDefinition x:Name="HeaderCol3" Width="160" MinWidth="90"/>
-                                <ColumnDefinition x:Name="HeaderCol4" Width="120" MinWidth="60"/>
-                                <ColumnDefinition x:Name="HeaderCol5" Width="120" MinWidth="60"/>
-                                <ColumnDefinition x:Name="HeaderCol6" Width="0" MinWidth="80"/>
-                                <ColumnDefinition x:Name="HeaderCol7" Width="0" MinWidth="80"/>
-                                <ColumnDefinition x:Name="HeaderCol8" Width="0" MinWidth="80"/>
-                                <ColumnDefinition x:Name="HeaderCol9" Width="0" MinWidth="80"/>
-                                <ColumnDefinition x:Name="HeaderCol10" Width="0" MinWidth="120"/>
-                                <ColumnDefinition x:Name="HeaderCol11" Width="0" MinWidth="120"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="1" Text="名称" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13"/>
-                            <Rectangle Grid.Column="1" HorizontalAlignment="Right" Width="1" Height="16" Fill="{ThemeResource SurfaceStrokeColorDefaultBrush}"/>
-                            <!-- 透明拖拽条（删除不支持的 Cursor 属性） -->
-                            <Rectangle x:Name="ResizeGrip1" Grid.Column="1" HorizontalAlignment="Right" Width="6" Height="40" Fill="Transparent"
+                            <!-- 表头 -->
+                            <Grid Grid.Row="0" x:Name="HeaderGrid" BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}" BorderThickness="0,0,0,1" Margin="4,0,4,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition x:Name="HeaderCol0" Width="40"/>
+                                    <ColumnDefinition x:Name="HeaderCol1" Width="250" MinWidth="100"/>
+                                    <ColumnDefinition x:Name="HeaderCol2" Width="120" MinWidth="60"/>
+                                    <ColumnDefinition x:Name="HeaderCol3" Width="160" MinWidth="90"/>
+                                    <ColumnDefinition x:Name="HeaderCol4" Width="120" MinWidth="60"/>
+                                    <ColumnDefinition x:Name="HeaderCol5" Width="120" MinWidth="60"/>
+                                    <ColumnDefinition x:Name="HeaderCol6" Width="0" MinWidth="80"/>
+                                    <ColumnDefinition x:Name="HeaderCol7" Width="0" MinWidth="80"/>
+                                    <ColumnDefinition x:Name="HeaderCol8" Width="0" MinWidth="80"/>
+                                    <ColumnDefinition x:Name="HeaderCol9" Width="0" MinWidth="80"/>
+                                    <ColumnDefinition x:Name="HeaderCol10" Width="0" MinWidth="120"/>
+                                    <ColumnDefinition x:Name="HeaderCol11" Width="0" MinWidth="120"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="1" Text="名称" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" FontSize="13"/>
+                                <Rectangle Grid.Column="1" HorizontalAlignment="Right" Width="1" Height="16" Fill="{ThemeResource SurfaceStrokeColorDefaultBrush}"/>
+                                <!-- 透明拖拽条（删除不支持的 Cursor 属性） -->
+                                <Rectangle x:Name="ResizeGrip1" Grid.Column="1" HorizontalAlignment="Right" Width="6" Height="40" Fill="Transparent"
                                        PointerPressed="HeaderResizeGrip_PointerPressed"
                                        PointerMoved="HeaderResizeGrip_PointerMoved"
                                        PointerReleased="HeaderResizeGrip_PointerReleased"
@@ -485,6 +486,18 @@
                         </ListView>
                     </Grid>
                 </ScrollViewer>
+
+                <Button x:Name="NavigateUpButton"
+                        Content="返回上一级"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Margin="0,0,16,16"
+                        Padding="14,8"
+                        MinWidth="130"
+                        Style="{StaticResource AccentButtonStyle}"
+                        Click="NavigateUp_Click"
+                        ToolTipService.ToolTip="返回上一级目录"/>
+                </Grid>
             </Border>
 
             <controls:GridSplitter x:Name="PreviewSplitter"
